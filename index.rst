@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 #############################################
-Welcome to ElasticStack Docs's documentation!
+ElasticStack Docs
 #############################################
 
 概要
@@ -33,13 +33,13 @@ Kibana 6.2.2、Logstash 6.2.2、X-Pack 6.2.2をインストールする必要が
 以下の順番で、使いたいElastic Stackプロダクトをインストールする
 
 1. Elasticsearch
-1. X-Pack for Elasticsearch
-1. Kibana
-1. X-Pack for Kibana
-1. Logstash
-1. X-Pack for Logstash
-1. Beats
-1. Elasticsearch Hadoop
+2. X-Pack for Elasticsearch
+3. Kibana
+4. X-Pack for Kibana
+5. Logstash
+6. X-Pack for Logstash
+7. Beats
+8. Elasticsearch Hadoop
 
 この順番でインストールすることは、各プロダクトが依存するコンポーネントが置かれていることを保証する。
 
