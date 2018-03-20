@@ -179,6 +179,6 @@ Elasticsearchは、バックグラウンドで実行するため、もしくは�
 テスト用のElasticsearch環境をセットアップしていると思う。
 これから開発を始めたり、商用で利用しようとする前に、いくつかの追加のセットアップをする必要があるだろう。
 
-* Elasticsearchの設定について
+* :doc:`Elasticsearchの設定<configuring_elasticsearch>`について
 * 重要な設定について
 * システムの設定について

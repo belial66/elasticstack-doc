@@ -16,7 +16,7 @@ Elasticsearchは、以下のパッケージフォーマットで提供されて�
        | Install Elasticsearch with Debian Package
    * - rpm
      - | RHEL,CentOS,SLES,OpenSUSEとかに適している。ElasticsearchのWebサイト、もしくはRPMリポジトリからダウンロードされる。
-       | Install Elasticsearch with RPM
+       | :doc:`Install Elasticsearch with RPM<install_rpm>`
    * - msi
      - | Windows 64-bit版にインストールするのに使う。.NETFramework 4.5が必要だ。Windowsで動かすための選択である。MSIは、ElasticsearchのWebサイトからダウンロードされる。
        | この機能は、ベータ版であり、変更される可能性がある。

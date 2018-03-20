@@ -14,7 +14,7 @@ Elasitcsearchの最新の安定バージョンは、 `Donwload Elasticsearch <ht
    ElasticsearchはJava 8以降を要求する。Oracle JDKもしくは、OpenJDKを使おう。
 
 ElasticsearchのPGP Keyをインポート
-------------------------------------------
+---------------------------------------------------
 我々は、ElasticsearchのSigning Key(PGP Key D88E42B4, https://pgp.mit.eduから利用可能)ですべてのパッケージを署名している。
 フィンガープリントは、以下：
 
@@ -29,7 +29,7 @@ public signing keyのダウンロードとインストール
    # rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
 
 RPMリポジトリからインストール
--------------------------------------
+-------------------------------------------
 /etc/yum.repos.d ディレクトリにelasticsearch.repoファイルを作成する。OpenSuSEの場合は、/etc/zypp/repos.d
 
 .. code-block:: config
@@ -51,12 +51,12 @@ RPMリポジトリからインストール
    # sudo dnf install Elasticsearch   // Fedora, new RHEL
    # zypper  // OpenSUSE
 
-.. tips::
+.. hint::
 
    dnfは、yumの後継。yumがpython2ベースなので、python3ベースの新しいパッケージマネージャが採用されることになっているらしい。
 
 手動でRPMをダウンロードしてインストール
--------------------------------------
+-------------------------------------------------
 RPMをダウンロードして、以下のようにインストールする：
 
 .. code-block:: console
@@ -73,7 +73,7 @@ RPMをダウンロードして、以下のようにインストールする：
    インストールスクリプトは、カーネルパラメータ（vm.max_map_countなど）を設定しようとする；systemd-sysctl.service unitをマスキングすることでこれをスキップできる。
 
 SysV init VS systemd
----------------------------------------------
+---------------------------------------------------
 Elasticsearchは、インストール後、自動的に開始されない。Elasticsearchの起動／停止の方法は、
 使っているシステムが SysV init なのか、systemd（新しいディストリで採用されている）かによる。
 次のコマンドを実行することで使われているのが何なのかを知ることができる。
@@ -263,6 +263,6 @@ RPMは、configファイル、logsとdataディレクトリをRPMベースの最
 テスト用のElasticsearch環境をセットアップしていると思う。
 これから開発を始めたり、商用で利用しようとする前に、いくつかの追加のセットアップをする必要があるだろう。
 
-* Elasticsearchの設定について
+* :doc:`Elasticsearchの設定<configuring_elasticsearch>`について
 * 重要な設定について
 * システムの設定について
