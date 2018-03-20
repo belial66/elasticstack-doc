@@ -27,7 +27,7 @@ Kibana 6.2.2、Logstash 6.2.2、X-Pack 6.2.2をインストールする必要が
 --------------------------
 以下の順番で、使いたいElastic Stackプロダクトをインストールする
 
-1. Elasticsearch (:doc:`Install Elasticsearch<Elasticsearch/installation>`)
+1. Elasticsearch (:doc:`Install instructions for Elasticsearch<Elasticsearch/installation>`)
 2. X-Pack for Elasticsearch
 3. Kibana
 4. X-Pack for Kibana

@@ -75,22 +75,73 @@ RPMをダウンロードして、以下のようにインストールする：
 SysV init VS systemd
 ---------------------------------------------
 Elasticsearchは、インストール後、自動的に開始されない。Elasticsearchの起動／停止の方法は、
-使っているシステムが SysV init なのか、systemd（新しいディストリで採用）かによる。
+使っているシステムが SysV init なのか、systemd（新しいディストリで採用されている）かによる。
 次のコマンドを実行することで使われているのが何なのかを知ることができる。
 
 .. code-block:: console
 
    # ps -p 1
 
-
-
-SysV init で実行している場合
+SysV init でElasticsearchを実行
 ---------------------------------------------
+システム起動時に、自動的に開始するためには、chkconfigコマンドを使う。
 
+.. code-block:: console
 
-systemd で実行している場合
+   # sudo chkconfig --add elasticsearch
+
+serviceコマンドを使った起動と停止
+
+.. code-block:: console
+
+   # sudo -i service elasticsearch start
+   # sudo -i service elasticsearch stop
+
+なんらかの理由で起動に失敗した場合、STDOUTに失敗の理由を表示する。ログファイルは、/var/log/elasticsearchに置かれる。
+
+systemd でElasticsearchを実行
 ---------------------------------------------
+システム起動時に、自動的に開始するためには、chkconfigコマンドを使う。
 
+.. code-block:: console
+
+   # sudo /bin/systemctl daemon-reload
+   # sudo /bin/systemctl enable elasticsearch.service
+
+serviceコマンドを使った起動と停止
+
+.. code-block:: console
+
+   # sudo systemctl start elasticsearch.service
+   # sudo systemctl stop elasticsearch.service
+
+これらのコマンドは、Elasticsearchの起動が成功したのかどうか、フィードバックしてくれない。
+代わりに、この情報は /var/log/elasticsearc/ におかれたログファイルに書かれる。
+
+デフォルトでは、Elasticsearchサービスは systemd journal で情報をログしていない。
+journalctlのロギングを有効にするには、elasticsearch.serviceファイルのExecStartコマンドラインから --quiet オプションを削除する必要がある。
+
+systemdロギングが有効になると、ロギング情報はjournalctlコマンドを使って利用可能になる。
+
+journalをtailする：
+
+.. code-block:: console
+
+   # sudo journalctl -f
+
+elasticsearch サービスに対するjournalのエントリをリストする：
+
+.. code-block:: console
+
+   # sudo journalctl --unit elasticsearch
+
+与えられた時刻から、elasticsearch サービスに対するjournalのエントリをリストする：
+
+.. code-block:: console
+
+   # sudo journalctl --unit elasticsearch --since "2016-10-30 18:17:16"
+
+コマンドラインのオプションについては、man journalctl、もしくは https://www.freedesktop.org/software/systemd/man/journalctl.html をチェックしてください。
 
 
 実行確認
@@ -104,53 +155,59 @@ localhostの9200番ポートにHTTPリクエストを送って、Elasticsearch�
    {
      "name" : "Cp8oag6"
      "cluster_name" : "elasticsearch"
-     ...
+     "cluster_uuid" : "AT69_T_DTp-1qgIJlatQqA",
+     "version" : {
+       "number" : "6.2.2",
+       "build_hash" : "f27399d",
+       "build_date" : "2016-03-30T09:51:41.449Z",
+       "build_snapshot" : false,
+       "lucene_version" : "7.2.1",
+       "minimum_wire_compatibility_version" : "1.2.3",
+       "minimum_index_compatibility_version" : "1.2.3"
+     },
+     "tagline" : "You Know, for Search"
    }
 
 標準出力へのログ表示は、コマンドラインでの実行時に、 -q または --quiet オプションをつけることで無効にできる。
 
-デーモンとして実行
-----------------------------
-Elasticsearchをデーモンとして実行するには、-d オプションを指定し、また -p オプションをつけて、プロセスIDをファイルに書くようにする。
-下記例のpidは、プロセスIDを書き込むファイルの名前。
-
-.. code-block:: console
-
-   # ./bin/elasticsearch -d -p pid
-
-ログメッセージは、$ES_HOME/logs/ ディレクトリに出力される。
-
-Elasticsearchをシャットダウンするには、pidファイルに記録されたプロセスIDをkillする。
-
-.. code-block:: console
-
-   # kill `cat pid`
-
-.. note::
-
-   startup scriptはRPMとDebianのパッケージで提供されている。
-
 Elasticsearchの設定（コマンドライン）
 ---------------------------------------------------
-デフォルトでは、 $ES_HOME/config/elasticsearch.yml ファイルから設定をロードする。
+ランタイムの設定のために、デフォルトでは、/etc/elasticsearchを使用する。
+このディレクトリと、ディレクトリ内のすべてのファイルの所有権は、パッケージインストール時に root:elasticsearchに設定される。
+そして、そのディレクトリは、/etc/elasticsearch配下のどのファイルも、サブディレクトリにも同じ所有権で設定されるように、setgidフラグを持っている。
+Elasticsearchのプロセスは、グループ権限経由でこのディレクトリ配下のファイルを読むことができることを期待されている。
+
+Elasticsearchは、/etc/elasticsearch/elasticsearch.ymlファイルから設定をロードする。このconfigファイルのフォーマットは、
 このconfigファイルのフォーマットは、Configuring Elasticsearchで説明されている。
 
-configで指定されるいくつかの設定は、コマンドラインで指定することができる。以下のように、-E syntaxを使う。
+RPMはシステム設定ファイル（/etc/sysconfig/elasticsearch）も持っている。ここには、以下のパラメータをセットできる。
 
-.. code-block:: console
+.. list-table::
+   :widths: 20 100
 
-   # ./bin/elasticsearch -d -Ecluster.name=my_cluster -Enode.name=node_1
+   * - JAVA_HOME
+     - カスタムのJavaパスを設定
+   * - MAX_OPEN_FILES
+     - open filesの最大数。デフォルトは、65536
+   * - MAX_LOCKED_MEMORY
+     - ロックされるメモリサイズの最大値。elasticsearch.ymlでbootstrap.memory_lockオプションを使っているなら、unlimitedに設定する。
+   * - MAX_MAP_COUNT
+     - ...
+   * - ES_PATH_CONF
+     - 設定ファイルのディレクトリ（elasticsearch.yml、jvm.options、log4j2.propertiesファイルを含む必要がある）； デフォルトは /etc/elasticsearch
+   * - ES_JAVA_OPTS
+     - 適用したい追加のJVM システムプロパティ
+   * - RESTART_ON_UPGRADE
+     - | パッケージのアップグレード時に再起動する設定で、デフォルトは false。これが意味することは、手動でパッケージをインストールした後にElasticsearchインスタンスを再起動しなければならない、ということ。
+       | この理由は、クラスターのアップグレードは、ネットワークが高トラフィックになったり、クラスタの応答時間を縮小する連続したシャードの再割り当てを行わないことを保証する。
 
 .. note::
 
-   一般に、cluster.nameのような広範なクラスタ設定は、elastcisearch.ymlファイルに追加して、node.nameのようなnode指定の設定は、コマンドラインで指定することになるだろう。
+   ディストリビューションは、/etc/sysconfig/elasticsearchファイル経由よりも、systemd経由で設定されるシステムリソースの制限を要求するsystemdを使用する。もっと知りたいなら、Systemd configurationを参照してください。
 
-ディレクトリレイアウト
+RPMのディレクトリレイアウト
 --------------------------------------
-.zipと.tar.gzのパッケージは、完全に自己完結型である。すべてのファイルとディレクトリが $ES_HOME に含まれる。
-
-これは、Elasticsearchを使い始めるのにディレクトリを作る必要がないため、とても便利なものである。アンインストールする際も$ES_HOMEを削除するだけなので、とても簡単だ。
-しかし、configディレクトリ、dataディレクトリ、logディレクトリのデフォルト位置を変更するのをお勧めする。重要なデータを後で削除してしまわないようにね。
+RPMは、configファイル、logsとdataディレクトリをRPMベースの最適な配置に置き換える。
 
 .. list-table::
    :widths: 15 80 40 15
@@ -162,36 +219,44 @@ configで指定されるいくつかの設定は、コマンドラインで指�
      - 設定
    * - home
      - Elasticsearchのホームディレクトリ or $ES_HOME
-     - 解凍時に生成されるディレクトリ
+     - | /usr/share
+       | /elasticsearch
      -
    * - bin
-     - バイナリのスクリプト（elasticsearch、elasticsearch-pluginなど）
-     - $ES_HOME/bin
+     - バイナリのスクリプト。ノードを開始するには、elasticsearch。プラグインをインストールするのは、elasticsearch-plugin
+     - | /usr/share
+       | /elasticsearch/bin
      -
    * - conf
-     - 設定ファイル(elasticsearch.ymlなど)
-     - $ES_HOME/config
+     - 設定ファイル elasticsearch.yml
+     - /etc/elasticsearch
      - ES_PATH_CONF
+   * - conf
+     - heap size、ファイルディスクリプタなどの環境変数
+     - | /etc/sysconfig
+       | /elastcisearch
+     -
    * - data
-     - 各インデックスやシャード割り当てのデータファイルの場所。複数の場所に保持することができる。
-     - $ES_HOME/data
+     - 各インデックスやノードに割り当てられたシャードのデータファイルの場所。複数の場所に保持することができる。
+     - | /var/lib
+       | /elastcisearch
      - path.data
    * - logs
      - ログファイルの場所
-     - $ES_HOME/logs
+     - | /var/log
+       | /elasticsearch
      - path.logs
    * - plugins
      - プラグインファイルの場所。各プラグインは、サブディレクトリに含まれる。
-     - $ES_HOME/plugins
+     - | /usr/share
+       | /elasticsearch
+       | /plugins
      -
    * - repo
-     - 共有ファイルシステムのリポジトリの場所。複数の場所に保持できる。
-     - Non configured
+     - 共有ファイルシステムのリポジトリの場所。複数の場所に保持できる。ファイルシステムのリポジトリは、ここに指定したディレクトリのサブディレクトリに置かれる。
+     - Not configured
      - path.repo
-   * - script
-     - スクリプトファイルの場所
-     - $ES_HOME/scripts
-     - path.scripts
+
 
 次のステップ
 ----------------------------

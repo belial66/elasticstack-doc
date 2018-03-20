@@ -63,7 +63,17 @@ localhostの9200番ポートにHTTPリクエストを送って、Elasticsearch�
    {
      "name" : "Cp8oag6"
      "cluster_name" : "elasticsearch"
-     ...
+     "cluster_uuid" : "AT69_T_DTp-1qgIJlatQqA",
+     "version" : {
+       "number" : "6.2.2",
+       "build_hash" : "f27399d",
+       "build_date" : "2016-03-30T09:51:41.449Z",
+       "build_snapshot" : false,
+       "lucene_version" : "7.2.1",
+       "minimum_wire_compatibility_version" : "1.2.3",
+       "minimum_index_compatibility_version" : "1.2.3"
+     },
+     "tagline" : "You Know, for Search"
    }
 
 Windowsのサービスとしてインストール
